@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corona Simulator</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <style>
+    body {
+      width: 630px;
+      font-size: 13px;
+    }
+
+    canvas {
+      border: 1px solid #eee;
+    }
+
+    .legend-badge {
+      width: 8px;
+      height: 8px;
+      display: inline-block;
+      border-radius: 100%;
+    }
+
+    .legend-badge.healthy {
+      background-color: #64dd17;
+    }
+
+    .legend-badge.sick {
+      background-color: #f44336;
+    }
+
+    .legend-badge.healed {
+      background-color: #1e88e5;
+    }
+
+    .legend-badge.dead {
+      background-color: #424242;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid py-3">
+    <canvas id="canvas" width="600" height="480"></canvas>
+    <div class="w-100 mt-2 d-flex align-items-center justify-content-center">
+      <button class="btn btn-primary btn-large px-3" onclick="start()">
+        Start
+      </button>
+    </div>
+    <div class="row mt-2">
+      <div class="col">
+        <b>Stats:</b>
+        <br />
+        Day: <span id="day-count">0</span>
+        <br />
+        Healthy: <span id="healthy-count">0</span>
+        <br />
+        Sick: <span id="sick-count">0</span>
+        <br />
+        Healed: <span id="healed-count">0</span>
+        <br />
+        Dead: <span id="dead-count">0</span>
+        <script src="index.js"></script>
+      </div>
+      <div class="col-auto text-right">
+        <b>Legend:</b>
+        <br />
+        <i class="legend-badge healthy"></i>
+        Healthy
+        <br />
+        <i class="legend-badge sick"></i>
+        Sick
+        <br />
+        <i class="legend-badge healed"></i>
+        Healed
+        <br />
+        <i class="legend-badge dead"></i>
+        Dead
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+</script>
+</body>
+
+</html>
