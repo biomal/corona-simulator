@@ -6,6 +6,9 @@ const canvasHeight = canvas.height
 /** @type {CanvasRenderingContext2D} */
 const context = canvas.getContext('2d')
 
+/** @type {HTMLInputElement} */
+const inputHowManyPeople = document.getElementById('howManyPeople')
+
 /** 
  * Returns an integer between min and max
  * @returns {number} 
@@ -14,7 +17,7 @@ const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 
 /** @type {Person[]} */
 const people = []
-const howManyPeople = 100
+let howManyPeople = inputHowManyPeople.value
 
 let started = false
 
@@ -34,109 +37,6 @@ const quarentinedRate = 80
 const contagionDistance = 5
 const contagionRate = 90
 const deathRate = 5
-
-class Ball {
-  /** @type {number} */
-  x = 0
-  /** @type {number} */
-  y = 0
-  /** @type {number} */
-  velX = random(-3, 3) || 1
-  /** @type {number} */
-  velY = random(-3, 3) || 1
-  /** @type {number} */
-  radius = 5
-  /** @type {string} */
-  color = 'cornflowerblue'
-  /** @type {boolean} */
-  stopped = false
-
-  constructor(x, y) {
-    this.x = x
-    this.y = y
-  }
-
-  draw() {
-    context.save()
-    context.beginPath()
-    context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-    context.fillStyle = this.color
-    context.fill()
-    context.restore()
-  }
-
-  move() {
-    if (this.stopped) return
-    // Right bound collision
-    if (this.x + this.velX > canvasWidth - this.radius)
-      this.velX = -this.velX
-    // Left bound collision
-    else if (this.x + this.velX < this.radius)
-      this.velX = -this.velX
-    // Lower bound collision
-    if (this.y + this.velY > canvasHeight - this.radius)
-      this.velY = -this.velY
-    // Upper bound collision
-    else if (this.y + this.velY < this.radius)
-      this.velY = -this.velY
-    // Updating position
-    this.x += this.velX
-    this.y += this.velY
-  }
-
-  /**
-   * Euclidean distance to another ball
-   * @param {Ball} b2 
-   */
-  distanceTo(b2) {
-    const x = this.x - b2.x
-    const y = this.y - b2.y
-    return Math.sqrt(x * x + y * y)
-  }
-}
-
-class Person extends Ball {
-  /** @type {number} */
-  id = 0
-  /** @type {'healthy' | 'sick' | 'healed' | 'dead'} */
-  healthStatus = 'healthy'
-  /** @type {number} */
-  contagionMoment
-
-  drawId() {
-    const x = this.x + this.radius
-    const y = this.y + this.radius
-    context.save()
-    context.beginPath()
-    context.font = '8px'
-    context.fillText(this.id, x, y)
-    context.restore()
-  }
-
-  healthStatusColor() {
-    switch (this.healthStatus) {
-      case 'healthy':
-        this.color = '#64dd17'
-        break
-      case 'sick':
-        this.color = '#f44336'
-        break
-      case 'healed':
-        this.color = '#1e88e5'
-        break
-      case 'dead':
-        this.color = '#424242'
-        break
-    }
-  }
-
-  draw() {
-    this.healthStatusColor()
-    this.drawId()
-    super.move()
-    super.draw()
-  }
-}
 
 const updateFramesAndDays = () => {
   frame++
@@ -218,6 +118,7 @@ const simulateVirusReaction = (person) => {
 }
 
 const draw = async () => {
+  // loop conditional
   if (started && peopleSick > 0)
     requestAnimationFrame(draw)
   context.clearRect(0, 0, canvas.width, canvas.height)
@@ -227,6 +128,31 @@ const draw = async () => {
     simulateVirusReaction(person)
     person.draw()
   })
+}
+
+const start = () => {
+  howManyPeople = inputHowManyPeople.value
+  for (let i = 0; i < howManyPeople; i++) {
+    const x = random(5, canvas.width - 5)
+    const y = random(5, canvas.height - 5)
+    const person = new Person()
+    const quarentined = random(0, 100) <= quarentinedRate
+    person.id = i + 1
+    person.x = x
+    person.y = y
+    person.stopped = quarentined
+    people.push(person)
+    updatePeopleStats('healthy')
+  }
+
+  const firstCase = people[0]
+  firstCase.healthStatus = 'sick'
+  firstCase.contagionMoment = 1
+  firstCase.stopped = false
+  updatePeopleStats('sick')
+
+  started = true
+  draw()
 }
 
 const hdpiFix = () => {
@@ -239,30 +165,4 @@ const hdpiFix = () => {
   canvas.style.height = height + 'px'
   context.scale(2, 2)
 }
-
-for (let i = 0; i < howManyPeople; i++) {
-  const x = random(5, canvas.width - 5)
-  const y = random(5, canvas.height - 5)
-  const person = new Person()
-  const quarentined = random(0, 100) <= quarentinedRate
-  person.id = i + 1
-  person.x = x
-  person.y = y
-  person.stopped = quarentined
-  people.push(person)
-  updatePeopleStats('healthy')
-}
-
-const firstCase = people[0]
-firstCase.healthStatus = 'sick'
-firstCase.contagionMoment = 1
-firstCase.stopped = false
-updatePeopleStats('sick')
-
 hdpiFix()
-draw()
-
-const start = () => {
-  started = true
-  draw()
-}

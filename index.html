@@ -33,7 +33,7 @@
     }
 
     .legend-badge.healed {
-      background-color: #1e88e5;
+      background-color: #aec4d8;
     }
 
     .legend-badge.dead {
@@ -63,7 +63,6 @@
         Healed: <span id="healed-count">0</span>
         <br />
         Dead: <span id="dead-count">0</span>
-        <script src="index.js"></script>
       </div>
       <div class="col-auto text-right">
         <b>Legend:</b>
@@ -81,7 +80,16 @@
         Dead
       </div>
     </div>
+    <div class="row mt-3">
+      <div class="col">
+        <label for="howManyPeople">Quantidade:</label>
+        <input type="number" id="howManyPeople" value="100" />
+      </div>
+    </div>
   </div>
+  <script src="ball.js"></script>
+  <script src="person.js"></script>
+  <script src="index.js"></script>
 </body>
 
 </html>
