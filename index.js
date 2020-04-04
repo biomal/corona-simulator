@@ -5,10 +5,11 @@ const canvasHeight = canvas.height
 
 /** @type {CanvasRenderingContext2D} */
 const context = canvas.getContext('2d')
-
+var req = 0
 /** @type {HTMLInputElement} */
 const inputHowManyPeople = document.getElementById('howManyPeople')
-
+const isolam = document.getElementById('isolamento')
+const inputTaxaisola = document.getElementById('taxaQuarentena')
 /** 
  * Returns an integer between min and max
  * @returns {number} 
@@ -16,8 +17,10 @@ const inputHowManyPeople = document.getElementById('howManyPeople')
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 
 /** @type {Person[]} */
-const people = []
+var people = []
 let howManyPeople = inputHowManyPeople.value
+let taxaQuarentena = inputTaxaisola.value
+let isolamento = false
 
 let started = false
 
@@ -44,7 +47,7 @@ const updateFramesAndDays = () => {
   document.getElementById('day-count').innerText = day
 }
 
-/** @param {'healthy' | 'sick' | 'healed' | 'dead'} whichStats */
+/** @param {'healthy' | 'sick' | 'healed' | 'dead' | 'reset'} whichStats */
 const updatePeopleStats = (whichStats) => {
   // Updating people health status
   switch (whichStats) {
@@ -63,11 +66,27 @@ const updatePeopleStats = (whichStats) => {
       peopleSick--
       peopleDead++
       break
+    case 'reset': 
+      peopleHealthy = 0
+      peopleSick = 0
+      peopleHealed = 0
+      peopleDead = 0
+      break
   }
   document.getElementById('healthy-count').innerText = peopleHealthy
   document.getElementById('sick-count').innerText = peopleSick
   document.getElementById('healed-count').innerText = peopleHealed
   document.getElementById('dead-count').innerText = peopleDead
+}
+
+const toggle = () =>
+{
+  var x = document.getElementById("taxquarentena");
+  if (x.style.display === "block") {
+    x.style.display = "none";
+  } else {
+    x.style.display = "block";
+  }
 }
 
 /** @param {Person} p1 */
@@ -117,12 +136,13 @@ const simulateVirusReaction = (person) => {
   }
 }
 
-const draw = async () => {
+const draw =  async() => {
   // loop conditional
   if (started && peopleSick > 0)
-    requestAnimationFrame(draw)
+    req = requestAnimationFrame(draw)
   context.clearRect(0, 0, canvas.width, canvas.height)
   updateFramesAndDays()
+  console.log(isolamento)
   people.forEach(person => {
     simulateContagion(person)
     simulateVirusReaction(person)
@@ -130,13 +150,29 @@ const draw = async () => {
   })
 }
 
+
 const start = () => {
+  if(started == true)
+  {
+  cancelAnimationFrame(req)
+    day = 0
+  frame = 0
+  people = []
+  updatePeopleStats('reset')
+  }
   howManyPeople = inputHowManyPeople.value
+
   for (let i = 0; i < howManyPeople; i++) {
     const x = random(5, canvas.width - 5)
     const y = random(5, canvas.height - 5)
     const person = new Person()
-    const quarentined = random(0, 100) <= quarentinedRate
+    var quarentined = false
+    if(isolam.checked)
+    {
+            quarentined = random(0, 100) <= taxaQuarentena
+    }
+
+
     person.id = i + 1
     person.x = x
     person.y = y
@@ -154,6 +190,7 @@ const start = () => {
   started = true
   draw()
 }
+
 
 const hdpiFix = () => {
   const pixelRatio = devicePixelRatio
